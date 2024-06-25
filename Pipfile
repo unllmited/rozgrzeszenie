@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+langchain = "*"
+openai = "*"
+python-dotenv = "*"
+black = "*"
+streamlit = "*"
+pydantic = "*"
+watchdog = "*"
+pandas = "*"
+streamlit-cookies-manager = "*"
+httpx-oauth = "*"
+stripe = "*"
+pyjwt = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.4"
