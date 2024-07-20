@@ -18,44 +18,32 @@ st.set_page_config(
     },
 )
 
-st.title('Automatyczna Spowiedź')
-
-st.divider()
+st.title('Twoja spowiedź online')
 
 with st.form("confession_form"):
-    st.subheader("Wstęp")
-    st.write("Niech będzie pochwalony Jezus Chrystus. Na wieki wieków. Amen")
-    st.write("W imię Ojca i Syna, i Ducha Świętego. Amen.")
-
-    st.subheader("Ostatnia spowiedź")
+    st.write("Niech będzie pochwalony.")
     last_confession = st.date_input("Ostatni raz u spowiedzi świętej byłem:")
 
-    st.subheader("Grzechy")
     sins = st.text_area("Obraziłem Pana Boga następującymi grzechami:")
 
-    submit_button = st.form_submit_button("Wyślij spowiedź")
+    submit_button = st.form_submit_button("Za te i za wszystkie inne moje grzechy proszę o rozgrzeszenie.")
 
     archetypes = ["good cop", "bad cop"]
 
     if submit_button:
-        c1, c2 = st.columns(2)
-        with c1:
-            callback_handler1 = StreamHandler(container=st.empty())
-            good = get_confession(
-                params={
-                    "last_confession": last_confession,
-                    "sins": sins,
-                    "archetype": archetypes[0],
-                },
-                callback_handler=callback_handler1,
-            )
-        with c2:
-            callback_handler2 = StreamHandler(container=st.empty())
-            bad = get_confession(
-                params={
-                    "last_confession": last_confession,
-                    "sins": sins,
-                    "archetype": archetypes[1],
-                },
-                callback_handler=callback_handler2,
-            )
+        chosen_archetype = archetypes[random.randint(0, 1)]
+        st.toast("Spowiada ksiądz skurwiel 😈" if chosen_archetype == "bad cop" else "Spowiada Cię anielska dusza 👼")
+        callback_handler = StreamHandler(container=st.empty())
+        get_confession(
+            params={
+                "last_confession": last_confession,
+                "sins": sins,
+                "archetype": chosen_archetype,
+            },
+            callback_handler=callback_handler,
+        )
+
+with st.expander(""):
+    st.text(
+        "Ta strona nie ma charakteru oficjalnej spowiedzi. Jej intencją nie jest również obrażanie uczuć religijnych."
+        )

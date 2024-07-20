@@ -1,13 +1,15 @@
+from datetime import date
+
 from langchain import PromptTemplate, LLMChain
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.chat_models import ChatOpenAI
 
 PROMPT_TEMPLATE = """
-You are a catholic priest. A penitent has come to you for confession. 
+Jesteś katolickim księdzem. Penitent przyszedł do ciebie do spowiedzi. 
 {archetype_description}
 
-Penitent confessed: {sins}
-Last confession was: {last_confession}
+Penitent wyznał: {sins}
+Ostatnia spowiedź miała miejsce {last_confession} dni temu.
 
 Bądź kreatywny w pokucie, nie dawaj samego ojcze nasz i zdrowaś Mario.
 
@@ -24,40 +26,41 @@ Zacznij od słów: "Mój drogi synu, za twoje grzechy..."
 
 
 def get_confession(
-    params: dict,
-    callback_handler: StreamlitCallbackHandler,
+        params: dict,
+        callback_handler: StreamlitCallbackHandler,
 ) -> str:
-    summary_prompt_template = PromptTemplate(
+    prompt = PromptTemplate(
         input_variables=["sins", "last_confession", "archetype_description"],
         template=PROMPT_TEMPLATE,
     )
 
     llm = ChatOpenAI(
-        temperature=0.1,
+        temperature=0.3,
         model_name="gpt-4o",
         streaming=True,
         callbacks=[callback_handler],
     )
 
-    chain = LLMChain(llm=llm, prompt=summary_prompt_template, verbose=True)
+    chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
 
-    archetype_description = ("You are a good cop type of individual."
-                             "You try to be moral, ethical, and honest in your actions."
-                             "You are a good listener and try to understand the other person's perspective."
-                             "You are empathetic and compassionate."
-                             "You are a good communicator and try to resolve conflicts peacefully."
-                             "Be like a good father"
-                             "") if params["archetype"] == "good cop" else ("You are a bad cop."
-                                                                            "You are tough, sarcastic and intimidating."
-                                                                            "You are not afraid to take risks and "
-                                                                            "make tough decisions."
-                                                                            "You are not afraid to confront people "
-                                                                            "and hold them accountable."
-                                                                            "Be like a bad cop")
+    archetype_description = \
+        ("""Jesteś dobrym gliną.
+            Próbujesz być moralny, etyczny i uczciwy w swoich działaniach.
+            Jesteś dobrym słuchaczem i starasz się zrozumieć perspektywę drugiej osoby.
+            Jesteś empatyczny i współczujący.
+            Jesteś dobrym komunikatorem i próbujesz rozwiązywać konflikty pokojowo.
+            Bądź jak dobry ojciec."""
+         ) if params["archetype"] == "good cop" \
+            else \
+            ("""Jesteś złym gliną.
+            Jesteś twardy, sarkastyczny i zastraszający.
+            Nie boisz się podejmować ryzyka i podejmować trudnych decyzji.
+            Nie boisz się konfrontować ludzi i pociągać ich do odpowiedzialności.
+            Bądź jak zły glina.""")
 
     result = chain.run(
         sins=params["sins"],
-        last_confession=params["last_confession"],
+        last_confession=date.today() - params["last_confession"],
         archetype_description=archetype_description,
     )
     return result

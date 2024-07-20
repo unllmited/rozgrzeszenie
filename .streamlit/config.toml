@@ -1,0 +1,13 @@
+[client]
+showErrorDetails = false
+
+[theme]
+primaryColor="#a20176"
+backgroundColor="#d1a5e6"
+secondaryBackgroundColor="#fde0fd"
+textColor="#56025c"
+
+[logger]
+level = "info"
+# https://docs.python.org/2.6/library/logging.html#formatter-objects
+messageFormat = "%(levelname)s %(asctime)s %(message)s"
